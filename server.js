@@ -23,34 +23,37 @@ async function startServer() {
     const db = client.db(dbName);
     const collection = db.collection('passwords');
 
-    // Get all passwords
+    // ✅ Get all passwords
     app.get('/', async (req, res) => {
       try {
         const findResult = await collection.find({}).toArray();
         res.json(findResult);
       } catch (error) {
+        console.error(error);
         res.status(500).send({ error: 'Failed to fetch passwords' });
       }
     });
 
-    // Save a password
+    // ✅ Save a password (just insert, don’t delete or replace)
     app.post('/', async (req, res) => {
       try {
         const password = req.body;
         const result = await collection.insertOne(password);
         res.send({ success: true, result });
       } catch (error) {
+        console.error(error);
         res.status(500).send({ error: 'Failed to save password' });
       }
     });
 
-    // Delete a password
+    // ✅ Delete a password by id
     app.delete('/', async (req, res) => {
       try {
-        const password = req.body;
-        const result = await collection.deleteOne(password);
+        const { id } = req.body;
+        const result = await collection.deleteOne({ id });
         res.send({ success: true, result });
       } catch (error) {
+        console.error(error);
         res.status(500).send({ error: 'Failed to delete password' });
       }
     });
